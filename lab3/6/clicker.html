@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Кликер</title>
+</head>
+<body>
+
+    <button id="clickButton">Кликни меня!</button>
+    <div class="stats">
+        <p>Счётчик кликов: <span id="clickCounter">0</span></p>
+        <p>Среднее КПС: <span id="averageCPS">0</span></p>
+    </div>
+
+    <script>
+        let clickCount = 0;
+        let startTime = null;
+    
+        if (localStorage.getItem('clickCount')) {
+            clickCount = parseInt(localStorage.getItem('clickCount'));
+            document.getElementById('clickCounter').innerText = clickCount;
+        }
+    
+        if (localStorage.getItem('startTime')) {
+            startTime = parseInt(localStorage.getItem('startTime'));
+        }
+    
+        function updateAverageCPS() {
+            if (startTime === null) return;
+    
+            const currentTime = new Date().getTime();
+            const elapsedTime = (currentTime - startTime) / 1000;
+    
+            if (elapsedTime > 0) {
+                const averageCPS = (clickCount / elapsedTime).toFixed(50);
+                document.getElementById('averageCPS').innerText = averageCPS;
+            }
+        }
+    
+        document.getElementById('clickButton').addEventListener('click', () => {
+            if (startTime === null) {
+                startTime = new Date().getTime();
+                localStorage.setItem('startTime', startTime);
+            }
+    
+            clickCount++;
+            document.getElementById('clickCounter').innerText = clickCount;
+            localStorage.setItem('clickCount', clickCount);
+    
+            updateAverageCPS();
+        });
+    
+        updateAverageCPS();
+    </script>
+
+
+</body>
+</html>

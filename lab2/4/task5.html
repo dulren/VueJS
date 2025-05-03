@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>IP Checker</title>
+</head>
+<body>
+    <h2>Проверка IP-адресов</h2>
+    <button onclick="checkIPs()">Проверить IP</button>
+    <div id="ip-check-container"></div>
+    <script>
+
+    async function checkIPs() {
+        const bannedCountries = ["Russia", "Belarus", "Afghanistan", "China", "Venezuela", "Iran"];
+        const container = document.getElementById('ip-check-container');
+        container.innerHTML = "";
+        let isBanned = false;
+        const ips = [];
+
+        for (let i = 0; i < 5; i++) {
+        let ip = prompt(`Введите IP-адрес ${i + 1}:`);
+        if (!ip) {
+            alert("IP не может быть пустым. Попробуйте снова.");
+            i--;
+            continue;
+        }
+        ips.push(ip.trim());
+        }
+
+        for (const ip of ips) {
+    try {
+        const response = await fetch(`http://ip-api.com/json/${ip}?fields=status,country`);
+        const data = await response.json();
+
+        const country = data.country;
+        const p = document.createElement('p');
+
+        if (data.status !== "success") {
+            p.textContent = `Не удалось получить данные для IP: ${ip}`;
+        } else {
+            p.textContent = `IP: ${ip}, Страна: ${country}`;
+
+            if (bannedCountries.includes(country)) {
+                isBanned = true;
+                container.appendChild(p);
+                break;
+            }
+        }
+
+        container.appendChild(p);
+    } catch (error) {
+        const p = document.createElement('p');
+        p.textContent = `Ошибка при проверке IP: ${ip} — ${error.message}`;
+        container.appendChild(p);
+    }
+}
+
+
+        const result = document.createElement('p');
+        result.textContent = isBanned
+        ? "Our services are not available in your country"
+        : "Welcome to our website!";
+        container.appendChild(result);
+    }
+
+    checkIPs();
+    </script>
+</body>
+</html>

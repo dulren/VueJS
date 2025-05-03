@@ -1,0 +1,19 @@
+{
+  "name": "sass-page",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "scss": "sass --watch src/scss/style.scss dist/scss.css",
+    "sass": "sass --watch src/sass/style.sass dist/sass.css",
+    "less": "lessc --watch src/less/style.less dist/less.css"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "less": "^4.3.0",
+    "sass": "^1.87.0"
+  }
+}

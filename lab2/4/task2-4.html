@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Image Loader Lab</title>
+    <style>
+        img { max-width: 150px; margin: 5px; }
+        p { color: red; }
+    </style>
+</head>
+<body>
+    <h2>1. последовательная загрузка с использованием Callback</h2>
+    <div id="callback-container"></div>
+
+    <h2>2. параллельная загрузка с использованием Promises</h2>
+    <div id="promise-container"></div>
+
+    <h2>3. загрузка с использованием async/await (последовательно)</h2>
+    <div id="async1-container"></div>
+
+    <h2>4. загрузка с использованием async/await (параллельно)</h2>
+    <div id="async2-container"></div>
+
+    <script>
+        // 1
+        function loadImageCallback(url, callback) {
+            const img = new Image();
+            img.src = url;
+            img.onload = () => callback(null, img);
+            img.onerror = () => callback(new Error("Can't load image"));
+        }
+
+        function loadSequentiallyCallback(urls, index = 0, container) {
+            if (index >= urls.length) return;
+            loadImageCallback(urls[index], (error, img) => {
+                if (error) {
+                    const p = document.createElement('p');
+                    p.textContent = "Can't load image";
+                    container.appendChild(p);
+                } else {
+                    container.appendChild(img);
+                }
+                loadSequentiallyCallback(urls, index + 1, container);
+            });
+        }
+
+        // 2
+        function loadImagePromise(url) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.src = url;
+                img.onload = () => resolve(img);
+                img.onerror = () => reject(new Error("Can't load image"));
+            });
+        }
+
+        function loadInParallelPromise(urls, container) {
+            urls.forEach(url => {
+                loadImagePromise(url)
+                    .then(img => container.appendChild(img))
+                    .catch(() => {
+                        const p = document.createElement('p');
+                        p.textContent = "Can't load image";
+                        container.appendChild(p);
+                    });
+            });
+        }
+
+        // 3
+        async function loadSequentiallyAsync(urls, container) {
+            for (const url of urls) {
+                try {
+                    const img = await loadImagePromise(url);
+                    container.appendChild(img);
+                } catch {
+                    const p = document.createElement('p');
+                    p.textContent = "Can't load image";
+                    container.appendChild(p);
+                }
+            }
+        }
+        // 4
+        async function loadInParallelAsync(urls, container) {
+            const promises = urls.map(url =>
+                loadImagePromise(url)
+                    .then(img => container.appendChild(img))
+                    .catch(() => {
+                        const p = document.createElement('p');
+                        p.textContent = "Can't load image";
+                        container.appendChild(p);
+                    })
+            );
+            await Promise.all(promises);
+        }
+
+        const urls = [];
+        for (let i = 0; i < 5; i++) {
+            const url = prompt(`Введите URL для изображения ${i + 1}:`);
+            urls.push(url);
+        }
+
+        const callbackContainer = document.getElementById('callback-container');
+        loadSequentiallyCallback(urls, 0, callbackContainer);
+
+        const promiseContainer = document.getElementById('promise-container');
+        loadInParallelPromise(urls, promiseContainer);
+
+        const async1Container = document.getElementById('async1-container');
+        loadSequentiallyAsync(urls, async1Container);
+
+        const async2Container = document.getElementById('async2-container');
+        loadInParallelAsync(urls, async2Container);
+    </script>
+</body>
+</html>

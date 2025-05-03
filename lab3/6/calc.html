@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Калькулятор</title>
+</head>
+<body>
+
+    <input type="text" id="display" disabled><br><br>
+
+    <button onclick="appendValue('7')">7</button>
+    <button onclick="appendValue('8')">8</button>
+    <button onclick="appendValue('9')">9</button>
+    <button onclick="appendValue('+')">+</button><br>
+
+    <button onclick="appendValue('4')">4</button>
+    <button onclick="appendValue('5')">5</button>
+    <button onclick="appendValue('6')">6</button>
+    <button onclick="appendValue('-')">-</button><br>
+
+    <button onclick="appendValue('1')">1</button>
+    <button onclick="appendValue('2')">2</button>
+    <button onclick="appendValue('3')">3</button>
+    <button onclick="appendValue('*')">*</button><br>
+
+    <button onclick="appendValue('0')">0</button>
+    <button onclick="appendValue('(')">(</button>
+    <button onclick="appendValue(')')">)</button>
+    <button onclick="appendValue('/')">/</button><br>
+
+    <button onclick="clearDisplay()">C</button>
+    <button onclick="calculate()">=</button>
+
+    <script>
+        const display = document.getElementById('display');
+        let expression = '';
+
+        function appendValue(value) {
+            expression += value;
+            display.value = expression;
+        }
+
+        function clearDisplay() {
+            expression = '';
+            display.value = '';
+        }
+
+        function calculate() {
+            try {
+                const result = evaluateExpression(expression);
+                display.value = result;
+                expression = result.toString();
+            } catch (e) {
+                display.value = 'Ошибка';
+                expression = '';
+            }
+        }
+
+        function evaluateExpression(expr) {
+            const outputQueue = [];
+            const operatorStack = [];
+            const operators = {
+                '+': { precedence: 1 },
+                '-': { precedence: 1 },
+                '*': { precedence: 2 },
+                '/': { precedence: 2 }
+            };
+
+            const tokens = expr.match(/\d+|\+|\-|\*|\/|\(|\)/g);
+            if (!tokens) throw new Error("Некорректное выражение");
+
+            for (const token of tokens) {
+                if (!isNaN(token)) {
+                    outputQueue.push(Number(token));
+                } else if (operators[token]) {
+                    while (operatorStack.length && operators[operatorStack[operatorStack.length - 1]] &&
+                           operators[token].precedence <= operators[operatorStack[operatorStack.length - 1]].precedence) {
+                        outputQueue.push(operatorStack.pop());
+                    }
+                    operatorStack.push(token);
+                } else if (token === '(') {
+                    operatorStack.push(token);
+                } else if (token === ')') {
+                    while (operatorStack.length && operatorStack[operatorStack.length - 1] !== '(') {
+                        outputQueue.push(operatorStack.pop());
+                    }
+                    operatorStack.pop();
+                }
+            }
+
+            while (operatorStack.length) {
+                outputQueue.push(operatorStack.pop());
+            }
+
+            const stack = [];
+            for (const token of outputQueue) {
+                if (!isNaN(token)) {
+                    stack.push(token);
+                } else {
+                    const b = stack.pop();
+                    const a = stack.pop();
+                    switch (token) {
+                        case '+': stack.push(a + b); break;
+                        case '-': stack.push(a - b); break;
+                        case '*': stack.push(a * b); break;
+                        case '/': stack.push(a / b); break;
+                    }
+                }
+            }
+
+            return stack.pop();
+        }
+    </script>
+
+</body>
+</html>

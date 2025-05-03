@@ -1,0 +1,33 @@
+body {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.red {
+    color: red;
+}
+.blue {
+    color: blue;
+}
+
+.custom-font {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+}
+
+table {
+    background-color: cyan;
+}
+
+a {
+    color: blue;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+
