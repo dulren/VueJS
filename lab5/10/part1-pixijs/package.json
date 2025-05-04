@@ -1,0 +1,19 @@
+{
+  "name": "part1-pixijs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "serve ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "pixi.js": "^8.9.2"
+  },
+  "description": "",
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}
